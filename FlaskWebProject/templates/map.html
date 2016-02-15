@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+   <head>
+      <title></title>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+      <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+
+      <script type="text/javascript">
+
+          var map = null;
+
+
+         function GetMap()
+         {
+            // Initialize the map
+            map = new Microsoft.Maps.Map(document.getElementById("mapDiv"),{
+                credentials:"{{ key }}",
+                center: new Microsoft.Maps.Location(37.767695,-122.445832), 
+                zoom: 13
+                }); 
+            
+            // get the data from flask using jinja2 
+            var y = JSON.parse('{{ data|tojson|safe }}');
+            var x = y[0]
+            console.log(x);
+            console.log(x['list_a'][0]);
+            console.log(x['list_a'][1]);
+                
+            // Create the locations
+            var bluedota = new Microsoft.Maps.Location(x['list_a'][0], x['list_a'][1]);
+            var bluedotb = new Microsoft.Maps.Location(x['list_b'][0], x['list_b'][1]);
+            
+            var lineVert = new Array(bluedota, bluedotb);
+            
+            color = x['color'];
+            
+            // create polyline 
+            var linetwo = new Microsoft.Maps.Polyline(lineVert,{
+                strokeColor:new Microsoft.Maps.Color(color[0], color[1], color[2], color[3]),
+                strokeThickness:5
+            });
+            
+            map.entities.push(linetwo);
+         }
+
+
+      </script>
+   </head>
+   <body onload="GetMap();">
+       <h1>The Map!</h1>
+       <a href={{ 'home' }}> back </a>
+      <div id='mapDiv' style="position:relative; width:700px; height:700px;"></div>
+   </body>
+</html>
+
